@@ -1,0 +1,37 @@
+version: "3.5"
+services:
+  php-jrt:
+    image: php:7.3.5-fpm
+    volumes:
+      - mydata:/data
+    networks:
+      - mynet
+    environment:
+      - JRT_PASSWORD=${JRT_PASSWORD}
+
+  webserver:
+    image: nginx:latest    
+    depends_on:
+      - php-jrt
+    
+    ports:
+      - "4000:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - mydata:/data
+    networks:
+      - mynet
+  
+  jrt-data:
+    build: 
+      context: jrt-data
+      dockerfile: Dockerfile    
+    volumes:
+      - mydata:/data
+
+  
+volumes:
+  mydata:
+
+networks:
+  mynet:
